@@ -1,0 +1,8 @@
+{
+  "name": "maple-code-discord",
+  "version": "0.0.0",
+  "scripts": {},
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
