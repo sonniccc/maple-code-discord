@@ -1,6 +1,7 @@
 {
   "name": "maple-code-discord",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "tsx index.ts"
   },
