@@ -12,4 +12,4 @@ RUN npm run build
 
 # Run the compiled entry point
 ENV NODE_ENV=production
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]
