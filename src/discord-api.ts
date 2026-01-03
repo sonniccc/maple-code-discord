@@ -140,3 +140,32 @@ export async function getChannelsCommandImpl() {
 
   return message;
 }
+
+export async function archiveCommandImpl() {
+  const allChannels = await getAllChannels();
+  const archive = findArchiveCategory(allChannels);
+
+  if (archive == null) {
+    throw "No archive";
+  }
+
+  const archivedChannels = findAllArchivedChannels(allChannels, archive.id);
+  let messageCount = 0;
+  for (const channel of archivedChannels) {
+    const messages = await getAllMessagesFromChannel(channel.id);
+    messageCount += messages.length;
+  }
+
+  const message: APIEmbed = {
+    title: "Server Summary",
+    color: 0xff0000,
+    fields: [
+      {
+        name: "🧮 Total message count",
+        value: `\`${messageCount.toString()}\``,
+      },
+    ],
+  };
+
+  return message;
+}
