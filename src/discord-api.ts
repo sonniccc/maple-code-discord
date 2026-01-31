@@ -62,6 +62,19 @@ async function getAllChannels() {
   return parsed;
 }
 
+export async function deleteChannel(channelId: string) {
+  const url = `${baseUrl}/channels/${channelId}`;
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to delete channel ${channelId}: ${res.statusText}`);
+  }
+}
+
 function findAllArchivedChannels(
   allChannels: Channel[],
   archiveCategoryId: string,
