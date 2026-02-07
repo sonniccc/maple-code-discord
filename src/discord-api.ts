@@ -49,29 +49,34 @@ async function requestDiscordApi<TSchema extends z.ZodType>(
 
 async function getAllChannels() {
   const url = `${baseUrl}/guilds/${env.DISCORD_GUILD_ID}/channels`;
-
   const res = await fetch(url, {
     headers: {
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
     },
   });
-
+  
   const data = await res.json();
-
+  
   const parsed = z.array(channelSchema).parse(data);
   return parsed;
 }
 
-export async function deleteChannel(channelId: string) {
-  const url = `${baseUrl}/channels/${channelId}`;
-  const res = await fetch(url, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bot ${env.DISCORD_TOKEN}`,
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to delete channel ${channelId}: ${res.statusText}`);
+export async function deleteArchivedChannel() {
+
+  const archivedChannels = await db.select({id:channelTable.id}).from(channelTable);
+  const archivedChannelIds = archivedChannels.map((c) => c.id);
+  console.log(`archived channel ids: ${archivedChannelIds.join(", ")}`);
+  for (const channelId of archivedChannelIds) {
+    const url = `${baseUrl}/channels/${channelId}`;
+    const res = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      },
+    });
+    if (!res.ok) {
+      console.log(`Failed to delete channel ${channelId}: ${res.statusText}`);
+    }
   }
 }
 
@@ -167,11 +172,12 @@ export async function archiveCommandImpl() {
   const archivedChannels = findAllArchivedChannels(allChannels, archive.id);
   let messageCount = 0;
   for (const channel of archivedChannels) {
-    const messages = (await getAllMessagesFromChannel(channel.id)).reverse();
-    console.log(
-      `insert: Channel ${channel.name} (${channel.id}) has ${messages.length} messages.`,
-    );
-    await db
+    try{
+      const messages = (await getAllMessagesFromChannel(channel.id)).reverse();
+      console.log(
+        `insert: Channel ${channel.name} (${channel.id}) has ${messages.length} messages.`,
+      );
+      await db
       .insert(channelTable)
       .values({
         id: channel.id,
@@ -189,7 +195,11 @@ export async function archiveCommandImpl() {
           messages: messages,
         },
       });
-    messageCount += messages.length;
+      messageCount += messages.length;
+    }
+    catch (e) {
+      console.error(`Failed to insert channel ${channel.id}:`, e);
+    }
   }
 
   const message: APIEmbed = {
