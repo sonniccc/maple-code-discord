@@ -10,7 +10,8 @@ export const deleteArchivedChannelsCommand: CommandSpec = {
     .setDescription("Delete all archived channels"),
   run: async (interaction) => {
     try{
-      await archiveCommandImpl();
+      // TODO: archiveCommandImpl throws an error so commented out for now. 
+      // await archiveCommandImpl();
       await deleteArchivedChannel();
       await interaction.reply("deleted archived: channels");
     }
