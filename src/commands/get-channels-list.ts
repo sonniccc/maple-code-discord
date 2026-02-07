@@ -13,7 +13,12 @@ export const listChannels: CommandSpec = {
     var index = 0;
     var chunk = 20;
     while (index < message.length) {
-      await interaction.followUp(message.slice(index, index + chunk).map(channel => `Name: ${channel.name}, ID: ${channel.id}`).join("\n"));
+      await interaction.followUp(
+        message
+          .slice(index, index + chunk)
+          .map((channel) => `Name: ${channel.name}, ID: ${channel.id}`)
+          .join("\n"),
+      );
       index += chunk;
     }
   },

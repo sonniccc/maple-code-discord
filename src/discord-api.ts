@@ -200,9 +200,8 @@ export const readChannelCommandImpl = async (channelId: string) =>
     .where(eq(channelTable.id, channelId))
     .limit(1);
 
-
 export const listChannelsCommandImpl = async () =>
   db
-  .select({id: channelTable.id, name: channelTable.name})
-  .from(channelTable)
-  .orderBy(asc(channelTable.name));
+    .select({ id: channelTable.id, name: channelTable.name })
+    .from(channelTable)
+    .orderBy(asc(channelTable.name));
